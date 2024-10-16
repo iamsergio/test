@@ -17,3 +17,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: testScreenshots-main
+          continue-on-error: true
+
+      - run: echo FOO
+
