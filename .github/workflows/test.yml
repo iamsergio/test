@@ -3,7 +3,11 @@ name: Test
 on:
   workflow_dispatch:
   push:
-
+    - branches
+      main
+  pull_request:
+    - branches
+      main
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -15,13 +19,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
+      - name: Download reference captures
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/download-artifact@v4
         with:
           name: testScreenshots-main
           path: ${{ github.workspace }}/reference_captures/
         continue-on-error: true # Don't fail on 1st run when there's nothing
 
-      - run: |
+      - name: compare captures
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
           sh compare_captures.sh ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
 
 
