@@ -17,7 +17,8 @@ jobs:
         os:
           - ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sources
+        uses: actions/checkout@v4
 
       - name: Download reference captures
         if: ${{ github.event_name == 'pull_request' }}
@@ -32,4 +33,5 @@ jobs:
         run: |
           pwd
           echo ${{ github.workspace }}
-          bash -c "compare_captures.sh ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/"
+          ls -lh
+          bash -c "./compare_captures.sh ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/"
