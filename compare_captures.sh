@@ -64,7 +64,7 @@ if [[ -n "$pr_text" ]]; then
     echo -e "$pr_text"
 
     # Variable is not empty, create PR comment
-    gh pr comment $PR_NUMBER --body $pr_text
+    gh pr comment $PR_NUMBER --body "$pr_text"
 fi
 
 # for i in $REFERENCE_CAPTURES_DIR/*.png ; do
