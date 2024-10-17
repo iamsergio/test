@@ -2,6 +2,7 @@ name: Test
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   build:
@@ -17,7 +18,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: testScreenshots-main
-        continue-on-error: true
+          path: ${{ GITHUB_WORKSPACE }}/reference_captures/
+        continue-on-error: true # Don't fail on 1st run when there's nothing
 
-      - run: echo FOO
+      - run: |
+          compare_captures.sh ${{ GITHUB_WORKSPACE }}/reference_captures/ ${{ GITHUB_WORKSPACE }}/build/captures/
+
 
