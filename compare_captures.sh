@@ -13,7 +13,11 @@ REFERENCE_CAPTURES_DIR=$2
 PR_CAPTURES_DIR=$3
 DIFF_DIR=$PR_CAPTURES_DIR/diffs/
 
-mkdir $DIFF_DIR
+mkdir $DIFF_DIR &> /dev/null
+
+# make *.png expand to empty if there's no png file
+setopt nullglob  &> null # zsh
+shopt -s nullglob &> null # bash
 
 # Let's accumulate the results in these arrays
 # so we can print them in one go in a single PR comment if we want
@@ -22,11 +26,11 @@ images_with_differences=()
 new_images_in_pr=()
 images_missing_in_pr=()
 
-for i in $PR_CAPTURES_DIR/*.png ; do
+for i in "${PR_CAPTURES_DIR}/*.png" ; do
     image_name=`basename $i`
     reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
-    if [ -f $reference_image ]; then
+    if [[ -f $reference_image ]] ; then
         if ! compare $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${image_name}_diff.png" ; then
             images_with_differences+=($image_name)
         fi
@@ -43,19 +47,22 @@ fi
 
 pr_text=""
 
-if [[ ${#images_with_differences[@]} -neq 0]] ; then
-    echo "found differences"
-done
+if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
+    echo "found differences ${#images_with_differences}"
+fi
 
-if [[ ${#new_images_in_pr[@]} -neq 0]] ; then
-    pr_text+="* PR has new images *\n"
-    for i in ${new_images_in_pr[@]} ; do
+if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
+    pr_text+="* PR has new images * \n"
+    for i in "${new_images_in_pr[@]}" ; do
         pr_text+=$i
     done
-done
+fi
 
+if [[ -n "$pr_text" ]]; then
 
-if [[ -n pr_text ]]; then
+    echo "Creating PR comment with content"
+    echo -e "$pr_text"
+
     # Variable is not empty, create PR comment
     gh pr comment $PR_NUMBER --body $pr_text
 fi
