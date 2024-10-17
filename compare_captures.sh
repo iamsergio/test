@@ -3,13 +3,17 @@
 
 #!/bin/sh
 
-if [ "$#" -ne 2 ] ; then
-    echo "Usage: compare_captures.sh <reference_capture_dir> <current_capture_dir>"
+if [ "$#" -ne 3 ] ; then
+    echo "Usage: compare_captures.sh <PR_NUMBER> <reference_capture_dir> <current_capture_dir>"
     exit 1
 fi
 
-REFERENCE_CAPTURES=$1
-PR_CAPTURES_DIR=$2
+PR_NUMBER=$1
+REFERENCE_CAPTURES_DIR=$2
+PR_CAPTURES_DIR=$3
+DIFF_DIR=$PR_CAPTURES_DIR/diffs/
+
+mkdir $DIFF_DIR
 
 # Let's accumulate the results in these arrays
 # so we can print them in one go in a single PR comment if we want
@@ -18,13 +22,12 @@ images_with_differences=()
 new_images_in_pr=()
 images_missing_in_pr=()
 
-
-for i in build/captures/*.png ; do
+for i in $PR_CAPTURES_DIR/*.png ; do
     image_name=`basename $i`
-    reference_image=$REFERENCE_CAPTURES/$image_name
+    reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
     if [ -f $reference_image ]; then
-        if ! compare build/captures/$image_name $reference_image "build/captures/${image_name}_diff.png" ; then
+        if ! compare $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${image_name}_diff.png" ; then
             images_with_differences+=($image_name)
         fi
     else
@@ -32,21 +35,44 @@ for i in build/captures/*.png ; do
     fi
 done
 
-for i in $REFERENCE_CAPTURES/*.png ; do
-    image_name=`basename $i`
-    if ! [ -f $PR_CAPTURES_DIR/$image_name ] ; then
-        images_missing_in_pr+=($image_name)
-    fi
+if [[ ${#images_with_differences[@]} -eq 0 && ${#new_images_in_pr[@]} -eq 0 && ${#images_missing_in_pr[@]} -eq 0 ]]; then
+    # all arrays are empty, no diffs to report
+    exit 0
+fi
+
+
+pr_text=""
+
+if [[ ${#images_with_differences[@]} -neq 0]] ; then
+    echo "found differences"
 done
 
-for i in ${images_with_differences[@]} ; do
-    echo "Detected image differences for $i"
+if [[ ${#new_images_in_pr[@]} -neq 0]] ; then
+    pr_text+="* PR has new images *\n"
+    for i in ${new_images_in_pr[@]} ; do
+        pr_text+=$i
+    done
 done
 
-for i in ${new_images_in_pr[@]} ; do
-    echo "New image $i, pushing to PR"
-done
 
-for i in ${images_missing_in_pr[@]} ; do
-    echo "Image $i wasn't generated"
-done
+if [[ -n pr_text ]]; then
+    # Variable is not empty, create PR comment
+    gh pr comment $PR_NUMBER --body $pr_text
+fi
+
+# for i in $REFERENCE_CAPTURES_DIR/*.png ; do
+#     image_name=`basename $i`
+#     if ! [ -f $PR_CAPTURES_DIR/$image_name ] ; then
+#         images_missing_in_pr+=($image_name)
+#     fi
+# done
+
+# for i in ${images_with_differences[@]} ; do
+#     echo "Detected image differences for $i"
+# done
+
+
+
+# for i in ${images_missing_in_pr[@]} ; do
+#     echo "Image $i wasn't generated"
+# done
