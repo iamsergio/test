@@ -30,5 +30,7 @@ jobs:
 
       - name: compare captures
         if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           ./compare_captures.sh ${{ github.event.pull_request.number }} ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
