@@ -35,3 +35,8 @@ jobs:
         run: |
           ./compare_captures.sh ${{ github.event.pull_request.number }} ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
 
+      - name: upload diffs
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact_diffs_pr_${{ github.event.pull_request.number }}
+          path: ${{ github.workspace }}/build/captures/diffs/

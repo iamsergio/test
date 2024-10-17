@@ -36,6 +36,7 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
         fi
     else
         new_images_in_pr+=($image_name)
+        cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/
     fi
 done
 
@@ -52,13 +53,23 @@ if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
 fi
 
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="* PR has new images * \n"
+    pr_text+="### PR has new images: \n"
     for i in "${new_images_in_pr[@]}" ; do
-        pr_text+=$i
+        pr_text+="[$1]($1)"
     done
 fi
 
-if [[ -n "$pr_text" ]]; then
+if [[ ${#images_missing_in_pr[@]} -ne 0 ]] ; then
+    pr_text+="### PR didn't produce the following images: \n"
+    for i in "${images_missing_in_pr[@]}" ; do
+        pr_text+="$1"
+    done
+fi
+
+if [[ -z "$pr_text" ]]; then
+    # All files are the same
+    rmdir $DIFF_DIR
+else
 
     echo "Creating PR comment with content"
     echo -e "$pr_text"
