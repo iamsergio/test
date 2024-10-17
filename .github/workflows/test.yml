@@ -22,6 +22,6 @@ jobs:
         continue-on-error: true # Don't fail on 1st run when there's nothing
 
       - run: |
-          compare_captures.sh ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
+          sh compare_captures.sh ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
 
 
