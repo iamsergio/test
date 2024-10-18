@@ -12,12 +12,15 @@ PR_NUMBER=$1
 REFERENCE_CAPTURES_DIR=$2
 PR_CAPTURES_DIR=$3
 DIFF_DIR=$PR_CAPTURES_DIR/diffs/
+DIFFS_RELEASE_NAME=test_screen_captures
+REFERENCE_RELEASE_NAME=reference_screen_captures-main # TODO we'll want more than one branch ?
+REPO_NAME=iamsergio/test
 
 mkdir $DIFF_DIR &> /dev/null
 
 # make *.png expand to empty if there's no png file
-setopt nullglob  &> null # zsh
-shopt -s nullglob &> null # bash
+setopt nullglob  &> /dev/null # zsh
+shopt -s nullglob &> /dev/null # bash
 
 # Let's accumulate the results in these arrays
 # so we can print them in one go in a single PR comment if we want
@@ -31,12 +34,12 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
     reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
     if [[ -f $reference_image ]] ; then
-        if ! compare $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${image_name}_diff.png" ; then
+        if ! compare $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ; then
             images_with_differences+=($image_name)
         fi
     else
         new_images_in_pr+=($image_name)
-        cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/
+        cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/${PR_NUMBER}-${image_name}
     fi
 done
 
@@ -45,6 +48,16 @@ if [[ ${#images_with_differences[@]} -eq 0 && ${#new_images_in_pr[@]} -eq 0 && $
     exit 0
 fi
 
+# 
+
+if ! gh release list | grep -q "$DIFFS_RELEASE_NAME"  ; then
+    echo "No asset release for diffs exists, creating..."
+    gh release create ${DIFFS_RELEASE_NAME} --notes "Screen captures diffs for faulty pull requests"
+fi
+
+
+echo "Uploading diffs..."
+gh release upload ${DIFFS_RELEASE_NAME} $DIFF_DIR/*png --clobber || exit 1
 
 pr_text=""
 
@@ -55,7 +68,7 @@ fi
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
     pr_text+="### PR has new images: \n"
     for i in "${new_images_in_pr[@]}" ; do
-        pr_text+="[$1]($1)"
+        pr_text+="[$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
     done
 fi
 
