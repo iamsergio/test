@@ -1,3 +1,4 @@
+# 1
 name: Test
 
 on:
@@ -16,7 +17,8 @@ jobs:
         os:
           - ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout sources
+        uses: actions/checkout@v4
 
       - name: Download reference captures
         if: ${{ github.event_name == 'pull_request' }}
@@ -28,8 +30,13 @@ jobs:
 
       - name: compare captures
         if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo $${{ github.workspace }}
-          sh compare_captures.sh ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
+          ./compare_captures.sh ${{ github.event.pull_request.number }} ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
 
-
+      - name: upload diffs
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact_diffs_pr_${{ github.event.pull_request.number }}
+          path: ${{ github.workspace }}/build/captures/diffs/
