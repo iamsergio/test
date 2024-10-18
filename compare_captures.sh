@@ -36,6 +36,7 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
     if [[ -f $reference_image ]] ; then
         if ! compare $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ; then
             images_with_differences+=($image_name)
+            cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/${PR_NUMBER}-${image_name}
         fi
     else
         new_images_in_pr+=($image_name)
@@ -59,14 +60,26 @@ fi
 echo "Uploading diffs..."
 gh release upload ${DIFFS_RELEASE_NAME} $DIFF_DIR/*png --clobber || exit 1
 
+tar cvzf ${PR_NUMBER}-all-captures.tgz $PR_CAPTURES_DIR/
+
+# Once the PR gets merged we need to access this tgz as it will be the new reference
+echo "Uploading all PR captures..."
+gh release upload ${DIFFS_RELEASE_NAME} ${PR_NUMBER}-all-captures.tgz --clobber || exit 1
+
 pr_text=""
 
 if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
-    echo "found differences ${#images_with_differences}"
+    pr_text+="# PR produced different images:<br>"
+    for i in "${images_with_differences[@]}" ; do
+        pr_text+="### $i <br>"
+        pr_text+="Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
+        pr_text+="Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
+        pr_text+="Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
+    done
 fi
 
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="### PR has new images:<br>"
+    pr_text+="# PR has new images:<br>"
     for i in "${new_images_in_pr[@]}" ; do
         pr_text+="- $i <br>"
         pr_text+="![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
@@ -74,7 +87,7 @@ if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
 fi
 
 if [[ ${#images_missing_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="### PR didn't produce the following images: \n"
+    pr_text+="# PR didn't produce the following images:<br>"
     for i in "${images_missing_in_pr[@]}" ; do
         pr_text+="$1"
     done
