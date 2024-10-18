@@ -66,9 +66,10 @@ if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
 fi
 
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="### PR has new images: \n"
+    pr_text+="### PR has new images:<br>"
     for i in "${new_images_in_pr[@]}" ; do
-        pr_text+="[$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
+        pr_text+="- $i <br>"
+        pr_text+="![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
     done
 fi
 
