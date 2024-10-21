@@ -119,20 +119,3 @@ else
     formatted_text=$(echo -e "$pr_text") # expand \n
     gh pr comment $PR_NUMBER --body "$formatted_text"
 fi
-
-# for i in $REFERENCE_CAPTURES_DIR/*.png ; do
-#     image_name=`basename $i`
-#     if ! [ -f $PR_CAPTURES_DIR/$image_name ] ; then
-#         images_missing_in_pr+=($image_name)
-#     fi
-# done
-
-# for i in ${images_with_differences[@]} ; do
-#     echo "Detected image differences for $i"
-# done
-
-
-
-# for i in ${images_missing_in_pr[@]} ; do
-#     echo "Image $i wasn't generated"
-# done
