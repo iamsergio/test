@@ -17,6 +17,9 @@ jobs:
     - name: Download reference captures from artifacts
       run: |
         wget https://github.com/iamsergio/test/releases/download/test_screen_captures/${{ github.event.pull_request.number }}-all-captures.tgz
-        tar xvf -C captures ${{ github.event.pull_request.number }}-all-captures.tgz
+        mkdir captures
+        tar xvf ${{ github.event.pull_request.number }}-all-captures.tgz -C captures --strip-components=1
         ls
+        echo foo
+        ls captures
         gh release upload reference_screen_captures-main captures/*.png
