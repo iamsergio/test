@@ -30,8 +30,8 @@ jobs:
       run: |
         if [ -d captures ]; then
           # Delete/recreate release, as there's no easy API to just rsync new pngs
-          gh release delete reference_screen_captures-main -y
-          gh release create reference_screen_captures-main --notes "Reference screen captures"
+          gh release delete reference_screen_captures-main --repo ${{ github.repository }} -y
+          gh release create reference_screen_captures-main --notes "Reference screen captures" --repo ${{ github.repository }}
 
           # upload new captures
           gh release upload reference_screen_captures-main captures/*.png --clobber --repo ${{ github.repository }}
