@@ -24,7 +24,6 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         if [ -d captures ]; then
-          gh release upload reference_screen_captures-main captures/*.png --repo ${{ github.repository }}
-          gh release delete-asset reference_screen_captures-main ${{ github.event.pull_request.number }}-all-captures.tgz --repo ${{ github.repository }}
-          gh release 
+          gh release upload reference_screen_captures-main captures/*.png --clobber --repo ${{ github.repository }}
+          gh release delete-asset test_screen_captures ${{ github.event.pull_request.number }}-all-captures.tgz --repo ${{ github.repository }}
         fi
