@@ -33,7 +33,7 @@ images_with_differences=()
 new_images_in_pr=()
 images_missing_in_pr=()
 
-for i in "${PR_CAPTURES_DIR}/*.png" ; do
+for i in ${PR_CAPTURES_DIR}/*.png ; do
     image_name=`basename $i`
     reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
@@ -101,14 +101,13 @@ if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
     for i in "${new_images_in_pr[@]}" ; do
         pr_text+="<details>\n\n"
         pr_text+="<summary>$i</summary>\n"
-        pr_text+="![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
-        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 90%; height: auto;\" >"
+        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 100%; height: auto;\" >"
         pr_text+="</details>"
     done
 fi
 
 if [[ ${#images_missing_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="# PR didn't produce the following images:<br>"
+    pr_text+="# PR didn't produce the following images:\n"
     for i in "${images_missing_in_pr[@]}" ; do
         pr_text+="$1"
     done
