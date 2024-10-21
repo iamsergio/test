@@ -25,4 +25,6 @@ jobs:
       run: |
         if [ -d captures ]; then
           gh release upload reference_screen_captures-main captures/*.png --repo ${{ github.repository }}
+          gh release delete-asset reference_screen_captures-main ${{ github.event.pull_request.number }}-all-captures.tgz --repo ${{ github.repository }}
+          gh release 
         fi
