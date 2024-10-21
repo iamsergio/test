@@ -111,7 +111,6 @@ if [[ -z "$pr_text" ]]; then
     # All files are the same
     rmdir $DIFF_DIR
 else
-
     echo "Creating PR comment with content"
     echo -e "$pr_text"
 
