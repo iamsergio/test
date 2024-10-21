@@ -11,7 +11,7 @@ fi
 PR_NUMBER=$1
 REFERENCE_CAPTURES_DIR=$2
 PR_CAPTURES_DIR=$3
-DIFF_DIR=$PR_CAPTURES_DIR/diffs/
+DIFF_DIR=$PR_CAPTURES_DIR/../diffs/
 DIFFS_RELEASE_NAME=test_screen_captures
 REFERENCE_RELEASE_NAME=reference_screen_captures-main # TODO we'll want more than one branch ?
 REPO_NAME=iamsergio/test
@@ -64,7 +64,7 @@ fi
 echo "Uploading diffs..."
 gh release upload ${DIFFS_RELEASE_NAME} $DIFF_DIR/*png --clobber || exit 1
 
-tar cvzf ${PR_NUMBER}-all-captures.tgz $PR_CAPTURES_DIR/
+tar cvzf ${PR_NUMBER}-all-captures.tgz -C "$(dirname $PR_CAPTURES_DIR)" "$(basename $PR_CAPTURES_DIR)"
 
 # Once the PR gets merged we need to access this tgz as it will be the new reference
 echo "Uploading all PR captures..."
