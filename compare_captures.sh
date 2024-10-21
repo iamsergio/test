@@ -112,7 +112,7 @@ if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
     for i in "${new_images_in_pr[@]}" ; do
         pr_text+="<details>\n\n"
         pr_text+="<summary>$i</summary>\n"
-        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 100%; height: auto;\" >"
+        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 50%; height: auto;\" >"
         pr_text+="</details>\n"
     done
 fi
@@ -122,7 +122,7 @@ if [[ ${#images_missing_in_pr[@]} -ne 0 ]] ; then
     for i in "${images_missing_in_pr[@]}" ; do
         pr_text+="<details>\n\n"
         pr_text+="<summary>$i</summary>\n"
-        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}\" style=\"max-width: 100%; height: auto;\" >"
+        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}\" style=\"max-width: 50%; height: auto;\" >"
         pr_text+="</details>"
     done
 fi
