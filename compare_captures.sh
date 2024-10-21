@@ -33,6 +33,7 @@ REFERENCE_RELEASE_NAME=reference_screen_captures-main # TODO we'll want more tha
 mkdir $DIFF_DIR &> /dev/null
 
 # make *.png expand to empty if there's no png file
+
 setopt nullglob  &> /dev/null # zsh
 shopt -s nullglob &> /dev/null # bash
 
