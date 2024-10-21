@@ -56,10 +56,14 @@ fi
 # 
 
 if ! gh release list | grep -q "$DIFFS_RELEASE_NAME"  ; then
-    echo "No asset release for diffs exists, creating..."
+    echo "No asset release for diffs, creating..."
     gh release create ${DIFFS_RELEASE_NAME} --notes "Screen captures diffs for faulty pull requests"
 fi
 
+if ! gh release list | grep -q "$REFERENCE_RELEASE_NAME"  ; then
+    echo "No asset release for reference capture, creating..."
+    gh release create ${REFERENCE_RELEASE_NAME} --notes "Reference screen captures"
+fi
 
 echo "Uploading diffs..."
 gh release upload ${DIFFS_RELEASE_NAME} $DIFF_DIR/*png --clobber || exit 1
