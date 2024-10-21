@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+# SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only
+
 # When a PR gets merged, this workflow uploads the new reference screen captures
 # If test_screen_captures/PRXXXX-all-captures.tgz does not exist, then it means the PR
 # didn't produce any diff captures
@@ -15,7 +18,7 @@ jobs:
 
     if: github.event.pull_request.merged == true
     steps:
-    - name: Download reference captures from artifacts
+    - name: Download reference captures from current PR
       run: |
         wget https://github.com/${{ github.repository }}/releases/download/test_screen_captures/${{ github.event.pull_request.number }}-all-captures.tgz || exit 0
         mkdir captures
