@@ -16,10 +16,13 @@ jobs:
     steps:
     - name: Download reference captures from artifacts
       run: |
-        wget https://github.com/iamsergio/test/releases/download/test_screen_captures/${{ github.event.pull_request.number }}-all-captures.tgz
+        wget https://github.com/iamsergio/test/releases/download/test_screen_captures/${{ github.event.pull_request.number }}-all-captures.tgz || exit 0
         mkdir captures
         tar xvf ${{ github.event.pull_request.number }}-all-captures.tgz -C captures --strip-components=1
-        ls
-        echo foo
-        ls captures
-        gh release upload reference_screen_captures-main captures/*.png
+    - name: Upload reference captures
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        if [ -d captures ]; then
+          gh release upload reference_screen_captures-main captures/*.png
+        fi
