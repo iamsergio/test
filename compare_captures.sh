@@ -40,9 +40,10 @@ for i in ${PR_CAPTURES_DIR}/*.png ; do
     echo "Testing $image_name"
 
     if [[ -f $reference_image ]] ; then
-        compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
         md5sum $PR_CAPTURES_DIR/$image_name
         md5sum $reference_image
+        compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
+        ls $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
         echo "$? - compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png"
         if [ $? -ne 0 ]  ; then
             echo "Found differences for $image_name"
