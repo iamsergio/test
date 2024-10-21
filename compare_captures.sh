@@ -118,3 +118,4 @@ else
     formatted_text=$(echo -e "$pr_text") # expand \n
     gh pr comment $PR_NUMBER --body "$formatted_text"
 fi
+
