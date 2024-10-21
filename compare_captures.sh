@@ -97,7 +97,7 @@ if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
 fi
 
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="# PR has new images:<br>"
+    pr_text+="# PR has new images:\n\n"
     for i in "${new_images_in_pr[@]}" ; do
         pr_text+="<details>\n\n"
         pr_text+="<summary>$i</summary>\n"
