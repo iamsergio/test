@@ -41,7 +41,7 @@ for i in ${PR_CAPTURES_DIR}/*.png ; do
 
     if [[ -f $reference_image ]] ; then
         # 'compare' from GH's old Ubuntu always returns 1 even if files are the same. Guard with 'diff'
-        if [ ! diff $PR_CAPTURES_DIR/$image_name $reference_image ] ; then
+        if ! diff $PR_CAPTURES_DIR/$image_name $reference_image &> /dev/null ; then
             echo "Found differences for $image_name"
             compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
             images_with_differences+=($image_name)
