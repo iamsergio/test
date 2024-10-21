@@ -37,6 +37,8 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
     image_name=`basename $i`
     reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
+    echo "Testing $image_name"
+
     if [[ -f $reference_image ]] ; then
         if ! compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ; then
             echo "found differences for $image_name"
@@ -97,8 +99,10 @@ fi
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
     pr_text+="# PR has new images:<br>"
     for i in "${new_images_in_pr[@]}" ; do
-        pr_text+="- $i <br>"
+        pr_text+="<details>\n\n"
+        pr_text+="<summary>$i</summary>\n"
         pr_text+="![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
+        pr_text+="</details>"
     done
 fi
 
