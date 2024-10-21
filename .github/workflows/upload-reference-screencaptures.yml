@@ -1,0 +1,18 @@
+# 1
+name: Upload reference screencaptures
+
+on:
+  pull_request: 
+    branches: [ main ]
+    types: [ closed ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: true
+
+    if: github.event.pull_request.merge == true
+    steps:
+    - name: foo
+      run: echo merged!
