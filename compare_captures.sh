@@ -40,7 +40,7 @@ for i in ${PR_CAPTURES_DIR}/*.png ; do
     echo "Testing $image_name"
 
     if [[ -f $reference_image ]] ; then
-        if [ compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ] ; then
+        if ! compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ; then
             echo "Found differences for $image_name"
             images_with_differences+=($image_name)
             cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/${PR_NUMBER}-${image_name}
