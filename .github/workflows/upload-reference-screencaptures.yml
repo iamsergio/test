@@ -1,5 +1,8 @@
-# 1
-name: Upload reference screencaptures
+# When a PR gets merged, this workflow uploads the new reference screen captures
+# If test_screen_captures/PRXXXX-all-captures.tgz does not exist, then it means the PR
+# didn't produce any diff captures
+
+name: Upload reference screen captures
 
 on:
   pull_request: 
@@ -9,16 +12,15 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: true
 
     if: github.event.pull_request.merged == true
     steps:
     - name: Download reference captures from artifacts
       run: |
-        wget https://github.com/iamsergio/test/releases/download/test_screen_captures/${{ github.event.pull_request.number }}-all-captures.tgz || exit 0
+        wget https://github.com/${{ github.repository }}/releases/download/test_screen_captures/${{ github.event.pull_request.number }}-all-captures.tgz || exit 0
         mkdir captures
         tar xvf ${{ github.event.pull_request.number }}-all-captures.tgz -C captures --strip-components=1
+
     - name: Upload reference captures
       env:
         GH_TOKEN: ${{ github.token }}
