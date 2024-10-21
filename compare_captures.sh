@@ -33,12 +33,14 @@ images_with_differences=()
 new_images_in_pr=()
 images_missing_in_pr=()
 
-for i in "${PR_CAPTURES_DIR}/*.png" ; do
+for i in ${PR_CAPTURES_DIR}/*.png ; do
     image_name=`basename $i`
     reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
+    echo "Testing $image_name"
+
     if [[ -f $reference_image ]] ; then
-        if [ ! compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ] ; then
+        if ! compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ; then
             echo "found differences for $image_name"
             images_with_differences+=($image_name)
             cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/${PR_NUMBER}-${image_name}
@@ -83,27 +85,34 @@ gh release upload ${DIFFS_RELEASE_NAME} ${PR_NUMBER}-all-captures.tgz --clobber 
 pr_text=""
 
 if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
-    pr_text+="# PR produced different images:<br>"
+    pr_text+="# PR produced different images:\n\n"
     for i in "${images_with_differences[@]}" ; do
-        pr_text+="### $i"
-        pr_text+="\n##### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
-        pr_text+="\n##### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
-        pr_text+="\n##### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
+        pr_text+="<details>\n"
+        pr_text+="<summary>$i</summary>\n"
+        pr_text+="\n### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
+        pr_text+="\n### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
+        pr_text+="\n### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
+        pr_text+="</details>"
     done
 fi
 
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="# PR has new images:<br>"
+    pr_text+="\n# PR has new images:\n\n"
     for i in "${new_images_in_pr[@]}" ; do
-        pr_text+="- $i <br>"
-        pr_text+="![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
+        pr_text+="<details>\n\n"
+        pr_text+="<summary>$i</summary>\n"
+        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 100%; height: auto;\" >"
+        pr_text+="</details>"
     done
 fi
 
 if [[ ${#images_missing_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="# PR didn't produce the following images:<br>"
+    pr_text+="\n# PR didn't produce the following images:\n\n"
     for i in "${images_missing_in_pr[@]}" ; do
-        pr_text+="$1"
+        pr_text+="<details>\n\n"
+        pr_text+="<summary>$i</summary>\n"
+        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}\" style=\"max-width: 100%; height: auto;\" >"
+        pr_text+="</details>"
     done
 fi
 
@@ -111,10 +120,11 @@ if [[ -z "$pr_text" ]]; then
     # All files are the same
     rmdir $DIFF_DIR
 else
-    echo "Creating PR comment with content"
-    echo -e "$pr_text"
-
-    # Variable is not empty, create PR comment
     formatted_text=$(echo -e "$pr_text") # expand \n
+
+    echo "Creating PR comment with content"
+    echo -e "$formatted_text"
+
     gh pr comment $PR_NUMBER --body "$formatted_text"
 fi
+
