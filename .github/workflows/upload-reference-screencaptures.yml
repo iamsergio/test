@@ -29,6 +29,12 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         if [ -d captures ]; then
+          # Delete/recreate release, as there's no easy API to just rsync new pngs
+          gh release delete reference_screen_captures-main -y
+          gh release create reference_screen_captures-main --notes "Reference screen captures"
+
+          # upload new captures
           gh release upload reference_screen_captures-main captures/*.png --clobber --repo ${{ github.repository }}
+
           gh release delete-asset test_screen_captures ${{ github.event.pull_request.number }}-all-captures.tgz --repo ${{ github.repository }}
         fi

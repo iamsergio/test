@@ -28,12 +28,6 @@ DIFF_DIR=$PR_CAPTURES_DIR/../diffs/
 DIFFS_RELEASE_NAME=test_screen_captures
 REFERENCE_RELEASE_NAME=reference_screen_captures-main # TODO we'll want more than one branch ?
 
-echo $PR_NUMBER
-echo $REPO_NAME
-echo $REFERENCE_CAPTURES_DIR
-echo $PR_CAPTURES_DIR
-echo $DIFF_DIR
-
 mkdir $DIFF_DIR &> /dev/null
 
 # make *.png expand to empty if there's no png file
