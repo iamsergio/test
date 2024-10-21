@@ -51,8 +51,8 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
 done
 
 if [[ ${#images_with_differences[@]} -eq 0 && ${#new_images_in_pr[@]} -eq 0 && ${#images_missing_in_pr[@]} -eq 0 ]]; then
-    # all arrays are empty, no diffs to report
-    echo "No screencapture diffs, exiting"
+    # Still useful to show a comment on success, in case last comment if about diffs then you push a new commit fixing them
+    gh pr comment $PR_NUMBER --body "✅ No screencapture diffs to report!"
     exit 0
 fi
 
