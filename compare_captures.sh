@@ -83,13 +83,13 @@ gh release upload ${DIFFS_RELEASE_NAME} ${PR_NUMBER}-all-captures.tgz --clobber 
 pr_text=""
 
 if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
-    pr_text+="# PR produced different images:<br>"
+    pr_text+="# PR produced different images:\n\n"
     for i in "${images_with_differences[@]}" ; do
         pr_text+="<details>\n"
         pr_text+="<summary>$i</summary>\n"
-        pr_text+="\n#### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
-        pr_text+="\n#### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
-        pr_text+="\n#### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
+        pr_text+="\n### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
+        pr_text+="\n### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
+        pr_text+="\n### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
         pr_text+="</details>"
     done
 fi
