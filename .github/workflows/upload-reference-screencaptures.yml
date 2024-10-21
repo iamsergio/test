@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
 
-    if: github.event.pull_request.merge == true
+    if: github.event.pull_request.merged == true
     steps:
     - name: foo
       run: echo merged!
