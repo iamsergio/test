@@ -97,7 +97,7 @@ if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
 fi
 
 if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="# PR has new images:\n\n"
+    pr_text+="\n# PR has new images:\n\n"
     for i in "${new_images_in_pr[@]}" ; do
         pr_text+="<details>\n\n"
         pr_text+="<summary>$i</summary>\n"
@@ -107,9 +107,12 @@ if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
 fi
 
 if [[ ${#images_missing_in_pr[@]} -ne 0 ]] ; then
-    pr_text+="# PR didn't produce the following images:\n"
+    pr_text+="\n# PR didn't produce the following images:\n\n"
     for i in "${images_missing_in_pr[@]}" ; do
-        pr_text+="$1"
+        pr_text+="<details>\n\n"
+        pr_text+="<summary>$i</summary>\n"
+        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}\" style=\"max-width: 100%; height: auto;\" >"
+        pr_text+="</details>"
     done
 fi
 
@@ -117,11 +120,11 @@ if [[ -z "$pr_text" ]]; then
     # All files are the same
     rmdir $DIFF_DIR
 else
-    echo "Creating PR comment with content"
-    echo -e "$pr_text"
-
-    # Variable is not empty, create PR comment
     formatted_text=$(echo -e "$pr_text") # expand \n
+
+    echo "Creating PR comment with content"
+    echo -e "$formatted_text"
+
     gh pr comment $PR_NUMBER --body "$formatted_text"
 fi
 
