@@ -103,7 +103,7 @@ if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
         pr_text+="\n### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
         pr_text+="\n### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
         pr_text+="\n### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
-        pr_text+="</details>"
+        pr_text+="</details>\n"
     done
 fi
 
@@ -113,7 +113,7 @@ if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
         pr_text+="<details>\n\n"
         pr_text+="<summary>$i</summary>\n"
         pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 100%; height: auto;\" >"
-        pr_text+="</details>"
+        pr_text+="</details>\n"
     done
 fi
 
