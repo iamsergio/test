@@ -14,5 +14,9 @@ jobs:
 
     if: github.event.pull_request.merged == true
     steps:
-    - name: foo
-      run: echo merged${{ github.event.pull_request.number }}
+    - name: Download reference captures from artifacts
+      run: |
+        wget https://github.com/iamsergio/test/releases/download/test_screen_captures/${{ github.event.pull_request.number }}-all-captures.tgz
+        tar xvf ${{ github.event.pull_request.number }}-all-captures.tgz
+        cd ${{ github.event.pull_request.number }}-all-captures
+        gh release upload reference_screen_captures-main *.png
