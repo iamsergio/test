@@ -38,7 +38,7 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
     reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
     if [[ -f $reference_image ]] ; then
-        if [ compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ] ; then
+        if [ ! compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ] ; then
             echo "found differences for $image_name"
             images_with_differences+=($image_name)
             cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/${PR_NUMBER}-${image_name}
@@ -85,10 +85,10 @@ pr_text=""
 if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
     pr_text+="# PR produced different images:<br>"
     for i in "${images_with_differences[@]}" ; do
-        pr_text+="### $i <br>"
-        pr_text+="##### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
-        pr_text+="##### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
-        pr_text+="##### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
+        pr_text+="### $i"
+        pr_text+="\n##### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
+        pr_text+="\n##### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
+        pr_text+="\n##### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
     done
 fi
 
@@ -116,7 +116,8 @@ else
     echo -e "$pr_text"
 
     # Variable is not empty, create PR comment
-    gh pr comment $PR_NUMBER --body "$pr_text"
+    formatted_text=$(echo -e "$pr_text") # expand \n
+    gh pr comment $PR_NUMBER --body "$formatted_text"
 fi
 
 # for i in $REFERENCE_CAPTURES_DIR/*.png ; do
