@@ -7,7 +7,7 @@ on:
     types: [ closed ]
 
 jobs:
-  build:
+  upload:
     runs-on: ubuntu-22.04
     strategy:
       fail-fast: true
@@ -15,4 +15,4 @@ jobs:
     if: github.event.pull_request.merged == true
     steps:
     - name: foo
-      run: echo merged!
+      run: echo merged${{ github.event.pull_request.number }}
