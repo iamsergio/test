@@ -102,7 +102,7 @@ if [[ ${#new_images_in_pr[@]} -ne 0 ]] ; then
         pr_text+="<details>\n\n"
         pr_text+="<summary>$i</summary>\n"
         pr_text+="![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i})"
-        pr_text+="<img src"\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 90%; height: auto;\" />"
+        pr_text+="<img src=\"https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}\" style=\"max-width: 90%; height: auto;\" >"
         pr_text+="</details>"
     done
 fi
