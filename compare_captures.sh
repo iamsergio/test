@@ -51,6 +51,17 @@ for i in ${PR_CAPTURES_DIR}/*.png ; do
     fi
 done
 
+# check if there's any images missing in PR
+for i in ${REFERENCE_CAPTURES_DIR}/*.png ; do
+    image_name=`basename $i`
+    pr_image=$PR_CAPTURES_DIR/$image_name
+
+    if [ ! -f $pr_image ] ; then
+        echo "Could not find $image_name in PR"
+        images_missing_in_pr+=$image_name
+    fi
+done
+
 if [[ ${#images_with_differences[@]} -eq 0 && ${#new_images_in_pr[@]} -eq 0 && ${#images_missing_in_pr[@]} -eq 0 ]]; then
     # Still useful to show a comment on success, in case PR has previous diff comments
     gh pr comment $PR_NUMBER --body "✅ No screencapture diffs to report!"
