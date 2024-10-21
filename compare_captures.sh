@@ -38,7 +38,8 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
     reference_image=$REFERENCE_CAPTURES_DIR/$image_name
 
     if [[ -f $reference_image ]] ; then
-        if ! compare $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ; then
+        if [ compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image "$DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png" ] ; then
+            echo "found differences for $image_name"
             images_with_differences+=($image_name)
             cp $PR_CAPTURES_DIR/$image_name $DIFF_DIR/${PR_NUMBER}-${image_name}
         fi
@@ -49,11 +50,12 @@ for i in "${PR_CAPTURES_DIR}/*.png" ; do
 done
 
 if [[ ${#images_with_differences[@]} -eq 0 && ${#new_images_in_pr[@]} -eq 0 && ${#images_missing_in_pr[@]} -eq 0 ]]; then
-    # all arrays are empty, no diffs to report
+    # Still useful to show a comment on success, in case PR has previous diff comments
+    gh pr comment $PR_NUMBER --body "✅ No screencapture diffs to report!"
     exit 0
 fi
 
-# 
+# Make sure the asset releases exist
 
 if ! gh release list | grep -q "$DIFFS_RELEASE_NAME"  ; then
     echo "No asset release for diffs, creating..."
@@ -80,9 +82,9 @@ if [[ ${#images_with_differences[@]} -ne 0 ]] ; then
     pr_text+="# PR produced different images:<br>"
     for i in "${images_with_differences[@]}" ; do
         pr_text+="### $i <br>"
-        pr_text+="Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
-        pr_text+="Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
-        pr_text+="Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
+        pr_text+="##### Got: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}) <br>"
+        pr_text+="##### Expected: ![$i](https://github.com/${REPO_NAME}/releases/download/${REFERENCE_RELEASE_NAME}/${i}) <br>"
+        pr_text+="##### Diff: ![$i](https://github.com/${REPO_NAME}/releases/download/${DIFFS_RELEASE_NAME}/${PR_NUMBER}-${i}_diff.png) <br>"
     done
 fi
 
