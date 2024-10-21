@@ -42,8 +42,9 @@ for i in ${PR_CAPTURES_DIR}/*.png ; do
     if [[ -f $reference_image ]] ; then
         md5sum $PR_CAPTURES_DIR/$image_name
         md5sum $reference_image
-        compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
         ls $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
+        compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
+
         echo "$? - compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png"
         if [ $? -ne 0 ]  ; then
             echo "Found differences for $image_name"
