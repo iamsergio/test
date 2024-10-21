@@ -22,6 +22,10 @@ mkdir $DIFF_DIR &> /dev/null
 setopt nullglob  &> /dev/null # zsh
 shopt -s nullglob &> /dev/null # bash
 
+
+# Download reference captures
+gh release download $REFERENCE_RELEASE_NAME -p "*.png" -D $REFERENCE_CAPTURES_DIR
+
 # Let's accumulate the results in these arrays
 # so we can print them in one go in a single PR comment if we want
 
