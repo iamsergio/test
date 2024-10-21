@@ -43,6 +43,7 @@ for i in ${PR_CAPTURES_DIR}/*.png ; do
         md5sum $PR_CAPTURES_DIR/$image_name
         md5sum $reference_image
         ls $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
+        compare --version
         compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png
 
         echo "$? - compare -compose src $PR_CAPTURES_DIR/$image_name $reference_image $DIFF_DIR/${PR_NUMBER}-${image_name}_diff.png"
