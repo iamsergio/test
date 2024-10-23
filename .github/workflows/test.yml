@@ -20,6 +20,11 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
+      - name: prints
+        run: |
+          echo ${{ github.workspace }}
+          echo ${{ runner.workspace }}
+
       - name: compare captures
         if: ${{ github.event_name == 'pull_request' }}
         env:
