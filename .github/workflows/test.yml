@@ -22,9 +22,7 @@ jobs:
 
       - name: prints
         run: |
-          echo ${{ github.workspace }}
-          echo ${{ runner.workspace }}
-          ls -lh /__w/
+          env
 
       - name: compare captures
         if: ${{ github.event_name == 'pull_request' }}
