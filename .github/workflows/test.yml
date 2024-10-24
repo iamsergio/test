@@ -3,9 +3,9 @@ name: Test
 
 on:
   push:
-    branches: [ main ]
-  pull_request: 
-    branches: [ main ]
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -15,14 +15,20 @@ jobs:
       fail-fast: true
       matrix:
         os:
-          - ubuntu-latest 
+          - ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+
+      - name: prints
+        run: |
+          env
 
       - name: compare captures
         if: ${{ github.event_name == 'pull_request' }}
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          env
           ./compare_captures.sh ${{ github.event.pull_request.number }} ${{ github.repository }} ${{ github.workspace }}/reference_captures/ ${{ github.workspace }}/build/captures/
